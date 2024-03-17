@@ -21,6 +21,9 @@
 
 //SH1106 Misc
 
+#define SH1106_COMMAND_FLIP        0xC8
+#define SH1106_COMMAND_MIRROR      0xA1
+
 //these commands are meant to be ORed with values 0x00 - 0x0F
 #define SH1106_COMMAND_SET_PAGE_ADDR      0xB0
 #define SH1106_COMMAND_SET_UPPER_COL_ADDR 0x10
@@ -96,6 +99,9 @@ int cursor_next_col(SH1106_t* dev){
 
 //Public Functions----------------------------------------------------
 SH1106_t* sh1106_init(){
+    sh1106_send_command(SH1106_COMMAND_FLIP);
+    sh1106_send_command(SH1106_COMMAND_MIRROR);
+
     sh1106_send_command(SH1106_COMMAND_DISPLAY_ON);
     SH1106_t* dev = (SH1106_t*) malloc(sizeof(SH1106_t)); 
     dev->cursor_col = 0;

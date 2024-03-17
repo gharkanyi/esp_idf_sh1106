@@ -6,12 +6,14 @@
 #include "sh1106.h"
 #include <math.h>
 
+#include <string.h>
+
 //i2c GPIO pin numbers
-#define I2C_SDA_PIN_NUM 10
-#define I2C_SCL_PIN_NUM 8
+#define I2C_SDA_PIN_NUM 5
+#define I2C_SCL_PIN_NUM 4
 
 //i2c clock speed
-#define I2C_CLK_SPEED 1000000 //1.0 Mhz
+#define I2C_CLK_SPEED 400000 // 1000000 // 1.0 MHz (DS: max. 400 kHz!)
 
 //sleep
 #define SLEEP(ms) vTaskDelay(pdMS_TO_TICKS(ms))
@@ -79,6 +81,18 @@ void app_main(void)
     sh1106_init(&dev);
     sh1106_clear_buffer(&dev);
 
+    sh1106_set_cursor(&dev, 0, 0);
+    const char welcome[] = " Hello, SH1106!";
+    sh1106_write_string(&dev, welcome, strlen(welcome));
+    sh1106_update_display(&dev);
+    SLEEP(2000);
+/*
+    sh1106_draw_pixel(&dev, 0, 0, true); sh1106_update_display(&dev);
+    SLEEP(500);
+    sh1106_draw_pixel(&dev, SH1106_WIDTH-1, SH1106_HEIGHT-1, true);
+    sh1106_update_display(&dev);
+    SLEEP(2000);
+*/
     Transform trans = {
         .rot_x = 0,
         .rot_y = 0,
@@ -88,7 +102,7 @@ void app_main(void)
     };
 
     Model* cube = build_cube(trans);
-
+    sh1106_clear_buffer(&dev);
     double rads_per_cycle = 0.1;
     while(1){
         cube->transform.rot_y += rads_per_cycle;
